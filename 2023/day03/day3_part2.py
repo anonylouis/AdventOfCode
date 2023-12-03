@@ -2,20 +2,60 @@
 
 f = open('input.txt')
 
-s = 0
-for game in f :
-	subsets = game.split(":", 1)[1].replace(',', ' ').split(';')
-	M = [0, 0, 0]
-	for subset in subsets :
-		subset = subset.split()
-		r,g,b = 0, 0, 0
-		for i in range(0, len(subset), 2) :
-			if (subset[i + 1] == "red") :
-				r += int(subset[i])
-			elif (subset[i + 1] == "green") :
-				g += int(subset[i])
-			else :
-				b += int(subset[i])
-		M[0], M[1], M[2] = max(M[0], r), max(M[1], g), max(M[2], b)
-	s += M[0] * M[1] * M[2]
+lines = []
+for line in f :
+	lines.append(line[:-1])
+
+i, s = 0, 0
+while i < len(lines) :
+	j = 0
+	while j < len(lines[i]) :
+		if lines[i][j] == '*':
+			N = []
+			if (i != 0) :
+				border = ""
+				border_min, border_max = max(0, j - 1), min(len(lines[i - 1]) - 1, j + 1)
+				if (border_min > 0 and lines[i - 1][border_min].isdigit()) :
+					while(border_min > 0 and lines[i - 1][border_min - 1].isdigit()) :
+						border_min -= 1
+				if (border_max < (len(lines[i - 1]) - 1) and lines[i - 1][border_max].isdigit()) :
+					while(border_max < (len(lines[i - 1]) - 1) and lines[i - 1][border_max + 1].isdigit()) :
+						border_max += 1
+				border += lines[i - 1][border_min : border_max + 1]
+				border = ''.join([k if k.isdigit() else ' ' for k in border])
+				N += list(map(int, border.split()))
+			if (i != (len(lines) - 1)) :
+				border = ""
+				border_min, border_max = max(0, j - 1), min(len(lines[i + 1]) - 1, j + 1)
+				if (border_min > 0 and lines[i + 1][border_min].isdigit()) :
+					while(border_min > 0 and lines[i + 1][border_min - 1].isdigit()) :
+						border_min -= 1
+				if (border_max < (len(lines[i + 1]) - 1) and lines[i + 1][border_max].isdigit()) :
+					while(border_max < (len(lines[i + 1]) - 1) and lines[i + 1][border_max + 1].isdigit()) :
+						border_max += 1
+				border += lines[i + 1][border_min : border_max + 1]
+				border = ''.join([k if k.isdigit() else ' ' for k in border])
+				N += list(map(int, border.split()))
+			if (j != 0) :
+				border = ""
+				border_min = j - 1
+				if (border_min > 0 and lines[i][border_min].isdigit()) :
+					while(border_min > 0 and lines[i][border_min - 1].isdigit()) :
+						border_min -= 1
+				border += lines[i][border_min : j]
+				border = ''.join([k if k.isdigit() else ' ' for k in border])
+				N += list(map(int, border.split()))
+			if (j < len(lines[i])) :
+				border = ""
+				border_max = j + 1
+				if (border_max < len(lines[i]) and lines[i][border_max].isdigit()) :
+					while(border_max < (len(lines[i]) - 1) and lines[i][border_max + 1].isdigit()) :
+						border_max += 1
+				border += lines[i][j + 1 : border_max + 1]
+				border = ''.join([k if k.isdigit() else ' ' for k in border])
+				N += list(map(int, border.split()))
+			if (len(N) == 2) :
+				s += N[0] * N[1]
+		j+=1
+	i += 1
 print(s)
