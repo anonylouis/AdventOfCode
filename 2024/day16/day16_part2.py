@@ -3,6 +3,7 @@
 f = open('input.txt')
  
 M, S, E = [], [], []
+NORTH, SOUTH, WEST, EAST = range(4)
 
 for line in f :
 	if line.count('S') :
@@ -10,6 +11,12 @@ for line in f :
 	if line.count('E') :
 		E = [len(M), line.index('E')]
 	M.append(list(line[:-1]))
+
+def print_map(_M) :
+	print("##########")
+	for line in _M :
+		print(line)
+	print("##########\n")
 
 # N, S, W, E
 to_explore = [S]
@@ -78,5 +85,6 @@ while len(to_explore) != 0 :
 			M[i][j + 1][3] = min(M[i][j + 1][3], tmp[3])
 		if to_append :
 			to_explore.append([i, j + 1])
+	#print_map(M)
 
 print(min(M[E[0]][E[1]]))
