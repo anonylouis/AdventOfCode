@@ -8,30 +8,33 @@ for line in f :
     line = line[:-1].replace(':', ' ').split()
     graph[line[0]] = line[1:]
 
-visited = set()
-def dfs(node, goal, paths = [], excludedNodes = ['out']) :
-    global graph, visited
-    if node in visited:
-        return paths
-    if node == goal :
-        paths.append([v for v in visited] + [ node ])
-        return paths
-    if node in excludedNodes :
-        return paths
-    visited.add(node)
+path = []
+
+memory = {'out' : [0, 0, 0, 1]}
+
+def dfs(node) :
+    global graph, path, memory
+    if node in memory :
+        return memory[node]
+    elif node in path:
+        return [0, 0, 0, 0]
+    path.append(node)
+    nb_path = [0, 0, 0, 0]
     for next_node in graph[node] :
-        dfs(next_node, goal, paths)
-    visited.remove(node)
-    return paths
-    
-partial_paths = dfs('dac', 'out')
-partial_paths = [path for path in partial_paths if 'svr' not in path]
-print(len(partial_paths))
+        r = dfs(next_node)
+        if node == 'dac':
+            nb_path[0] += r[2]
+            nb_path[1] += r[3]
+        elif node == 'fft':
+            nb_path[0] += r[1]
+            nb_path[2] += r[3]
+        else :
+            nb_path[0] += r[0]
+            nb_path[1] += r[1]
+            nb_path[2] += r[2]
+            nb_path[3] += r[3]
+    path.remove(node)
+    memory[node] = nb_path
+    return nb_path
 
-print(visited)
-for path in partial_paths :
-    print(len(dfs('fft', 'dac', excludedNodes=path)))
-
-
-
-print(partial_paths[0])
+print(dfs('svr'))
